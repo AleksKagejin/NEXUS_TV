@@ -1,3 +1,4 @@
+
 name: Сборка NEXUS-TV
 
 on:
@@ -11,30 +12,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Получить файлы
+      - name: Получить файлы проекта
         uses: actions/checkout@v4
 
       - name: Установить Java 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: 17
+          java-version: '17'
 
-      - name: Распаковать проект
+      - name: Установить Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Проверить структуру проекта
         run: |
-          mkdir project
-          unzip -q NEXUS-TV-project-fixed.zip -d project
-          find project -name gradlew -type f
+          ls -la
+          test -d app
+          test -f settings.gradle.kts
+          test -f build.gradle.kts
 
       - name: Собрать APK
-        run: |
-          GRADLEW=$(find project -name gradlew -type f | head -n 1)
-          chmod +x "$GRADLEW"
-          cd "$(dirname "$GRADLEW")"
-          ./gradlew assembleDebug
+        run: gradle assembleDebug
 
       - name: Сохранить APK
         uses: actions/upload-artifact@v4
         with:
           name: NEXUS-TV-APK
-          path: project/**/build/outputs/apk/debug/*.apk
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          
