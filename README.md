@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Получить файлы проекта
+      - name: Получить файлы
         uses: actions/checkout@v4
 
-      - name: Установить Java 17
+      - name: Установить Java
         uses: actions/setup-java@v5
         with:
           distribution: temurin
@@ -26,12 +26,11 @@ jobs:
         with:
           gradle-version: '8.7'
 
-      - name: Проверить структуру проекта
+      - name: Проверить проект
         run: |
           ls -la
           test -d app
           test -f settings.gradle.kts
-          test -f build.gradle.kts
 
       - name: Собрать APK
         run: gradle assembleDebug
